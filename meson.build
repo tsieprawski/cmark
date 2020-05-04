@@ -3,4 +3,6 @@ project('cmark', 'c',
     meson_version: '>=0.52',
     license: 'MIT')
 
+pkg = import('pkgconfig')
+
 subdir('src')

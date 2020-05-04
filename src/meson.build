@@ -1,6 +1,6 @@
 configuration = configuration_data()
 configuration.set('CMARK_EXPORT', '__attribute__ ((visibility ("default")))')
-cmark_version_h = configure_file(output: 'cmark_export.h',
+cmark_export_h = configure_file(output: 'cmark_export.h',
     configuration: configuration)
 
 configuration = configuration_data()
@@ -30,6 +30,7 @@ libcmark_src = [
     'houdini_html_e.c',
     'houdini_html_u.c',
     'cmark_ctype.c',
+    cmark_export_h,
     cmark_version_h
 ]
 
@@ -86,6 +87,7 @@ libcmark = shared_library('cmark',
     install: true)
 libcmark_dep = declare_dependency(link_with: libcmark,
     include_directories: libcmark_inc)
+pkg.generate(libcmark)
 
 libcmark_static = static_library('cmark',
     libcmark_src,
@@ -100,4 +102,7 @@ libcmark_static_dep = declare_dependency(link_with: libcmark_static,
 cmark = executable('cmark',
     'main.c',
     dependencies: [libcmark_static_dep])
+
+install_headers(cmark_export_h)
+install_headers(cmark_version_h)
 install_headers('cmark.h')
