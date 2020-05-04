@@ -14,11 +14,6 @@ configuration.set('true', '1')
 cmark_version_h = configure_file(output: 'cmark_version.h',
     configuration: configuration)
 
-config_h = configure_file(input: 'config.h.in',
-    format: 'cmake',
-    output: 'config.h',
-    configuration: configuration_data())
-
 libcmark_inc = include_directories('.')
 libcmark_src = [
     'cmark.c',
@@ -31,18 +26,57 @@ libcmark_src = [
     'buffer.c',
     'references.c',
     'render.c',
-    'man.c',
-    'xml.c',
-    'html.c',
-    'commonmark.c',
-    'latex.c',
     'houdini_href_e.c',
     'houdini_html_e.c',
     'houdini_html_u.c',
     'cmark_ctype.c',
-    cmark_version_h,
+    cmark_version_h
+]
+
+config = configuration_data()
+if get_option('commonmark')
+    libcmark_src += [
+        'commonmark.c'
+    ]
+    config.set('HAVE_COMMONMARK', '1')
+endif
+
+if get_option('html')
+    libcmark_src += [
+        'html.c'
+    ]
+    config.set('HAVE_HTML', '1')
+endif
+
+if get_option('latex')
+    libcmark_src += [
+        'latex.c'
+    ]
+    config.set('HAVE_LATEX', '1')
+endif
+
+if get_option('man')
+    libcmark_src += [
+        'man.c'
+    ]
+    config.set('HAVE_LATEX', '1')
+endif
+
+if get_option('xml')
+    libcmark_src += [
+        'xml.c'
+    ]
+    config.set('HAVE_XML', '1')
+endif
+
+config_h = configure_file(input: 'config.h.in',
+    format: 'cmake',
+    output: 'config.h',
+    configuration: config)
+libcmark_src += [
     config_h
 ]
+
 libcmark = shared_library('cmark',
     libcmark_src,
     gnu_symbol_visibility: 'hidden',
@@ -53,7 +87,17 @@ libcmark = shared_library('cmark',
 libcmark_dep = declare_dependency(link_with: libcmark,
     include_directories: libcmark_inc)
 
+libcmark_static = static_library('cmark',
+    libcmark_src,
+    gnu_symbol_visibility: 'hidden',
+    include_directories: [
+        libcmark_inc
+    ],
+    install: true)
+libcmark_static_dep = declare_dependency(link_with: libcmark_static,
+    include_directories: libcmark_inc)
+
 cmark = executable('cmark',
     'main.c',
-    dependencies: [libcmark_dep])
+    dependencies: [libcmark_static_dep])
 install_headers('cmark.h')

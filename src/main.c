@@ -21,18 +21,62 @@
 
 typedef enum {
   FORMAT_NONE,
+#ifdef HAVE_HTML
   FORMAT_HTML,
+#endif
+#ifdef HAVE_XML
   FORMAT_XML,
+#endif
+#ifdef HAVE_MAN
   FORMAT_MAN,
+#endif
+#ifdef HAVE_COMMONMARK
   FORMAT_COMMONMARK,
-  FORMAT_LATEX
+#endif
+#ifdef HAVE_LATEX
+  FORMAT_LATEX,
+#endif
+  FORMAT_LAST
 } writer_format;
 
 void print_usage() {
   printf("Usage:   cmark [FILE*]\n");
   printf("Options:\n");
-  printf("  --to, -t FORMAT  Specify output format (html, xml, man, "
-         "commonmark, latex)\n");
+  printf("  --to, -t FORMAT  Specify output format (");
+#ifdef HAVE_HTML
+  printf("html");
+  #if defined HAVE_XML || \
+    defined HAVE_MAN || \
+    defined HAVE_COMMONMARK || \
+    defined HAVE_LATEX
+  printf(", ");
+  #endif
+#endif
+#ifdef HAVE_XML
+  printf("xml");
+  #if defined HAVE_MAN || \
+    defined HAVE_COMMONMARK || \
+    defined HAVE_LATEX
+  printf(", ");
+  #endif
+#endif
+#ifdef HAVE_MAN
+  printf("man");
+  #if defined HAVE_COMMONMARK || \
+    defined HAVE_LATEX
+  printf(", ");
+  #endif
+#endif
+#ifdef HAVE_COMMONMARK
+  printf("commonmark");
+  #ifdef HAVE_LATEX
+  printf(", ");
+  #endif
+#endif
+#ifdef HAVE_LATEX
+  printf("latex");
+#endif
+  printf(")\n");
   printf("  --width WIDTH    Specify wrap width (default 0 = nowrap)\n");
   printf("  --sourcepos      Include source position attribute\n");
   printf("  --hardbreaks     Treat newlines as hard line breaks\n");
@@ -49,21 +93,31 @@ static void print_document(cmark_node *document, writer_format writer,
   char *result;
 
   switch (writer) {
+#ifdef HAVE_HTML
   case FORMAT_HTML:
     result = cmark_render_html(document, options);
     break;
+#endif
+#ifdef HAVE_XML
   case FORMAT_XML:
     result = cmark_render_xml(document, options);
     break;
+#endif
+#ifdef HAVE_MAN
   case FORMAT_MAN:
     result = cmark_render_man(document, options, width);
     break;
+#endif
+#ifdef HAVE_COMMONMARK
   case FORMAT_COMMONMARK:
     result = cmark_render_commonmark(document, options, width);
     break;
+#endif
+#ifdef HAVE_LATEX
   case FORMAT_LATEX:
     result = cmark_render_latex(document, options, width);
     break;
+#endif
   default:
     fprintf(stderr, "Unknown format %d\n", writer);
     exit(1);
@@ -81,7 +135,22 @@ int main(int argc, char *argv[]) {
   cmark_node *document;
   int width = 0;
   char *unparsed;
-  writer_format writer = FORMAT_HTML;
+
+  writer_format writer =
+#ifdef HAVE_HTML
+  FORMAT_HTML;
+#elif defined HAVE_XML
+  FORMAT_XML;
+#elif defined HAVE_MAN
+  FORMAT_MAN;
+#elif defined HAVE_COMMONMARK
+  FORMAT_COMMONMARK;
+#elif defined HAVE_LATEX
+  FORMAT_LATEX;
+#else
+  FORMAT_NONE;
+#endif
+
   int options = CMARK_OPT_DEFAULT;
 
 #ifdef USE_PLEDGE
@@ -135,16 +204,27 @@ int main(int argc, char *argv[]) {
     } else if ((strcmp(argv[i], "-t") == 0) || (strcmp(argv[i], "--to") == 0)) {
       i += 1;
       if (i < argc) {
-        if (strcmp(argv[i], "man") == 0) {
+        if (0) {
+#ifdef HAVE_MAN
+        } else if (strcmp(argv[i], "man") == 0) {
           writer = FORMAT_MAN;
+#endif
+#ifdef HAVE_HTML
         } else if (strcmp(argv[i], "html") == 0) {
           writer = FORMAT_HTML;
+#endif
+#ifdef HAVE_XML
         } else if (strcmp(argv[i], "xml") == 0) {
           writer = FORMAT_XML;
+#endif
+#ifdef HAVE_COMMONMARK
         } else if (strcmp(argv[i], "commonmark") == 0) {
           writer = FORMAT_COMMONMARK;
+#endif
+#ifdef HAVE_LATEX
         } else if (strcmp(argv[i], "latex") == 0) {
           writer = FORMAT_LATEX;
+#endif
         } else {
           fprintf(stderr, "Unknown format %s\n", argv[i]);
           exit(1);
