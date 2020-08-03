@@ -20,6 +20,7 @@
 #include "inlines.h"
 #include "houdini.h"
 #include "buffer.h"
+#include "chunk.h"
 
 #define CODE_INDENT 4
 #define TAB_STOP 4
@@ -1166,7 +1167,7 @@ static void add_text_to_container(cmark_parser *parser, cmark_node *container,
       int matches_end_condition;
       switch (container->as.html_block_type) {
       case 1:
-        // </script>, </style>, </pre>
+        // </script>, </style>, </textarea>, </pre>
         matches_end_condition =
             scan_html_block_end_1(input, parser->first_nonspace);
         break;
