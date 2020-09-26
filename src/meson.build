@@ -49,6 +49,13 @@ if get_option('html')
     config.set('HAVE_HTML', '1')
 endif
 
+if get_option('htmlol')
+    libcmark_src += [
+        'htmlol.c'
+    ]
+    config.set('HAVE_HTMLOL', '1')
+endif
+
 if get_option('latex')
     libcmark_src += [
         'latex.c'

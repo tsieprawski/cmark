@@ -27,6 +27,15 @@ extern "C" {
 CMARK_EXPORT
 char *cmark_markdown_to_html(const char *text, size_t len, int options);
 
+/** Convert 'text' (assumed to be a UTF-8 encoded string with length
+ * 'len') from CommonMark Markdown to HTML, returning a null-terminated,
+ * UTF-8-encoded string, but first line and text only.
+ * It is the caller's responsibility
+ * to free the returned buffer.
+ */
+CMARK_EXPORT
+char *cmark_markdown_to_htmlol(const char *text, size_t len, int options);
+
 /** ## Node Structure
  */
 
@@ -517,6 +526,15 @@ char *cmark_render_xml(cmark_node *root, int options);
  */
 CMARK_EXPORT
 char *cmark_render_html(cmark_node *root, int options);
+
+/** Render a 'node' tree as an HTML fragment, but only a first line,
+ * text only.
+ * It is up to the user
+ * to add an appropriate header and footer. It is the caller's
+ * responsibility to free the returned buffer.
+ */
+CMARK_EXPORT
+char *cmark_render_htmlol(cmark_node *root, int options);
 
 /** Render a 'node' tree as a groff man page, without the header.
  * It is the caller's responsibility to free the returned buffer.

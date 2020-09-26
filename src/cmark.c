@@ -47,3 +47,17 @@ char *cmark_markdown_to_html(const char *text, size_t len, int options) {
   return result;
 }
 #endif
+
+#ifdef HAVE_HTMLOL
+char *cmark_markdown_to_htmlol(const char *text, size_t len, int options) {
+  cmark_node *doc;
+  char *result;
+
+  doc = cmark_parse_document(text, len, options);
+
+  result = cmark_render_htmlol(doc, options);
+  cmark_node_free(doc);
+
+  return result;
+}
+#endif

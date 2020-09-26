@@ -71,6 +71,7 @@ CMARK_INLINE int c99_snprintf(char *outBuf, size_t size, const char *format, ...
 
 #cmakedefine HAVE_COMMONMARK
 #cmakedefine HAVE_HTML
+#cmakedefine HAVE_HTMLOL
 #cmakedefine HAVE_LATEX
 #cmakedefine HAVE_MAN
 #cmakedefine HAVE_XML

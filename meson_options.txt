@@ -1,5 +1,6 @@
 option('commonmark', type: 'boolean', value: false)
 option('html', type: 'boolean', value: false)
+option('htmlol', type: 'boolean', value: false)
 option('latex', type: 'boolean', value: false)
 option('man', type: 'boolean', value: false)
 option('xml', type: 'boolean', value: false)

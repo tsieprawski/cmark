@@ -24,6 +24,9 @@ typedef enum {
 #ifdef HAVE_HTML
   FORMAT_HTML,
 #endif
+#ifdef HAVE_HTMLOL
+  FORMAT_HTMLOL,
+#endif
 #ifdef HAVE_XML
   FORMAT_XML,
 #endif
@@ -45,6 +48,16 @@ void print_usage() {
   printf("  --to, -t FORMAT  Specify output format (");
 #ifdef HAVE_HTML
   printf("html");
+  #if defined HAVE_HTMLOL || \
+    defined HAVE_XML || \
+    defined HAVE_MAN || \
+    defined HAVE_COMMONMARK || \
+    defined HAVE_LATEX
+  printf(", ");
+  #endif
+#endif
+#ifdef HAVE_HTMLOL
+  printf("htmlol");
   #if defined HAVE_XML || \
     defined HAVE_MAN || \
     defined HAVE_COMMONMARK || \
@@ -99,6 +112,11 @@ static void print_document(cmark_node *document, writer_format writer,
     result = cmark_render_html(document, options);
     break;
 #endif
+#ifdef HAVE_HTMLOL
+  case FORMAT_HTMLOL:
+    result = cmark_render_htmlol(document, options);
+    break;
+#endif
 #ifdef HAVE_XML
   case FORMAT_XML:
     result = cmark_render_xml(document, options);
@@ -140,6 +158,8 @@ int main(int argc, char *argv[]) {
   writer_format writer =
 #ifdef HAVE_HTML
   FORMAT_HTML;
+#elif HAVE_HTMLOL
+  FORMAT_HTMLOL;
 #elif defined HAVE_XML
   FORMAT_XML;
 #elif defined HAVE_MAN
@@ -215,6 +235,10 @@ int main(int argc, char *argv[]) {
 #ifdef HAVE_HTML
         } else if (strcmp(argv[i], "html") == 0) {
           writer = FORMAT_HTML;
+#endif
+#ifdef HAVE_HTMLOL
+        } else if (strcmp(argv[i], "htmlol") == 0) {
+          writer = FORMAT_HTMLOL;
 #endif
 #ifdef HAVE_XML
         } else if (strcmp(argv[i], "xml") == 0) {
